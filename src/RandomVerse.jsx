@@ -4,16 +4,28 @@ function RandomVerse() {
   const [verse, setVerse] = useState("");
 
   const getRandomVerse = async () => {
-    const res = await fetch("https://labs.bible.org/api/?passage=random&type=json");
-    const data = await res.json();
-    setVerse(`${data[0].bookname} ${data[0].chapter}:${data[0].verse} - ${data[0].text}`);
+    try {
+      // Fetch from local backend
+      const res = await fetch("http://localhost:5000/api/verses");
+      const data = await res.json();
+
+      // Pick a random verse from the array
+      const randomIndex = Math.floor(Math.random() * data.length);
+      const randomVerse = data[randomIndex];
+
+      // Set the verse to display
+      setVerse(`${randomVerse.book} ${randomVerse.chapter}:${randomVerse.verse} - ${randomVerse.text}`);
+    } catch (err) {
+      console.error("Error fetching verse:", err);
+      setVerse("Failed to load verse.");
+    }
   };
 
   return (
     <div style={{ textAlign: "center", margin: "20px" }}>
       <h2>Random Bible Verse</h2>
-      <button 
-        onClick={getRandomVerse} 
+      <button
+        onClick={getRandomVerse}
         style={{
           padding: "8px 16px",
           cursor: "pointer",
@@ -31,4 +43,3 @@ function RandomVerse() {
 }
 
 export default RandomVerse;
-
